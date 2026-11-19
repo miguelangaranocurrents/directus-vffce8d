@@ -94,7 +94,11 @@ export class FilesService extends ItemsService<File> {
 
 		// If this is a new file upload, we need to generate a new primary key and DB record
 		if (isReplacement === false || primaryKey === undefined) {
-			primaryKey = await this.createOne(payload, { emitEvents: false });
+			// The DB record must carry a type, otherwise it is hidden from the file library (which filters on type)
+			primaryKey = await this.createOne(
+				{ ...payload, type: payload.type || 'application/octet-stream' },
+				{ emitEvents: false },
+			);
 		}
 
 		const fileExtension =

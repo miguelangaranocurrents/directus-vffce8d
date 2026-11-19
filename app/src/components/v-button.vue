@@ -133,7 +133,7 @@ const isActiveRoute = computed(() => {
 		}
 	}
 
-	return false;
+	return active.value;
 });
 
 async function onClick(event: MouseEvent) {
