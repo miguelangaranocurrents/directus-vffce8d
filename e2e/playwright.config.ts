@@ -1,0 +1,28 @@
+import { currentsReporter } from '@currents/playwright';
+import { defineConfig, devices } from '@playwright/test';
+import currentsConfig from './currents.config';
+
+export default defineConfig({
+	testDir: './tests',
+	fullyParallel: false,
+	forbidOnly: !!process.env.CI,
+	retries: 2,
+	workers: process.env.CI ? 2 : 1,
+	timeout: 60_000,
+	expect: { timeout: 15_000 },
+	reporter: [
+		['list'],
+		['html', { open: 'never' }],
+		['json', { outputFile: 'test-results.json' }],
+		...(process.env.CURRENTS_RECORD_KEY ? [currentsReporter(currentsConfig)] : []),
+	],
+	use: {
+		...devices['Desktop Chrome'],
+		baseURL: process.env.DIRECTUS_URL ?? 'http://localhost:8055',
+		viewport: { width: 1440, height: 900 },
+		trace: 'on',
+		video: 'on',
+		screenshot: 'on',
+	},
+	projects: [{ name: 'chromium' }],
+});
